@@ -1,20 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import UserInput from "@/components/UserInput";
 
 export default function Home() {
-  const [uploadedImage, setUploadedImage] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (submitted) {
-      router.push("/diagnosis");
-    }
-  }, [submitted, router]);
 
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen gap-16 p-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">

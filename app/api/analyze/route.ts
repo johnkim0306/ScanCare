@@ -27,12 +27,12 @@ const generativeVisionModel = vertexAI.getGenerativeModel({
 });
 
 const prompt = `
-  Analyze this image to find the names of the foods in the image. 
-  Write the food item and your estimate for the expiry date for that item when stored appropriately, in an array of objects format.
-  Use this example as context: [{"name": "bread", "expiry": 10}, {"name": "apple", "expiry": 8}, {"name": "coffee", "expiry": 16}]
-  There are two properties: the name of the item with no adjectives in lowercase, 
-  and the number of days before it will go bad when stored appropriately as an integer.
-  If no food items are found, return -1.
+  Analyze this medical image (X-ray/CT scan) to identify any abnormalities or conditions present. 
+  Provide a detailed report of your findings in an array of objects format.
+  Use this example as context: [{"condition": "fracture", "description": "A fracture in the left femur"}, {"condition": "pneumonia", "description": "Signs of pneumonia in the right lung"}]
+  There are two properties: the condition identified in lowercase, 
+  and a detailed description of the condition as a string.
+  If no abnormalities are found, return -1.
 `;
 
 const readFile = promisify(fs.readFile);

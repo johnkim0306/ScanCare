@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
-import foodItemsReducer from './features/foodItems/foodItemsSlice';
+import scanResultsReducer from './features/scanResults/scanResultsSlice';
 
 export const store = configureStore({
   reducer: {
-    foodItems: foodItemsReducer,
+    scanResults: scanResultsReducer,
   },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export default store;

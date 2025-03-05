@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import { setRecipes } from '@/lib/features/foodItems/foodItemsSlice';
-import Refrigerator from "@/components/Refrigerator";
 import UserInput from "@/components/UserInput";
 import { useQuery } from '@tanstack/react-query';
 
@@ -105,7 +104,6 @@ const MainPage: React.FC = () => {
         </div>
         <div className="flex flex-row items-start gap-4">
           <UserInput />
-          <Refrigerator />
         </div>
       </div>
     </div>

@@ -38,7 +38,9 @@ export async function GET(req: NextRequest) {
     }
 
     const tokenData = await response.json();
-    return NextResponse.json({ tokenData });
+    return NextResponse.redirect(
+      `http://localhost:3000/documents?access_token=${tokenData.access_token}&patientId=${tokenData.patient}`
+    );
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

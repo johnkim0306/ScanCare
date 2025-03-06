@@ -2,6 +2,7 @@
 
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import UserInput from "@/components/UserInput";
+import ReturnUser from "@/components/ReturnUser";
 
 export default function Home() {
 
@@ -36,7 +37,8 @@ export default function Home() {
       </main>
 
       {/* Image Upload and Diagnosis Result */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-8 p-8 rounded-lg shadow-lg w-full">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-10 p-8 rounded-lg shadow-lg w-full">
+        <ReturnUser />
         <ReactQueryProvider>
           <UserInput />
         </ReactQueryProvider>

@@ -27,11 +27,35 @@ const generativeVisionModel = vertexAI.getGenerativeModel({
 });
 
 const prompt = `
-  Analyze this medical image (X-ray/CT scan) to identify any abnormalities or conditions present. 
-  Provide a detailed report of your findings in an array of objects format.
-  Use this example as context: [{"condition": "fracture", "description": "A fracture in the left femur"}, {"condition": "pneumonia", "description": "Signs of pneumonia in the right lung"}]
-  There are two properties: the condition identified in lowercase, 
-  and a detailed description of the condition as a string.
+  Analyze this medical image (X-ray/CT scan/MRI) to identify any abnormalities, conditions, or early signs of potential health issues. 
+  Provide a detailed report of your findings in an array of objects format, including:
+    1. The condition identified (in lowercase).
+    2. A detailed description of the condition.
+    3. A confidence score (0-100) indicating the likelihood of the condition.
+    4. Actionable recommendations for preventive care or next steps (e.g., follow-up tests, treatments, lifestyle changes).
+
+  Use this example as context: 
+  [
+    {
+      "condition": "fracture",
+      "description": "A fracture in the left femur",
+      "confidence": 95,
+      "recommendations": [
+        "Refer to an orthopedic specialist for further evaluation.",
+        "Schedule a follow-up X-ray in 4 weeks to monitor healing."
+      ]
+    },
+    {
+      "condition": "pneumonia",
+      "description": "Signs of pneumonia in the right lung",
+      "confidence": 85,
+      "recommendations": [
+        "Prescribe antibiotics based on clinical guidelines.",
+        "Monitor oxygen saturation levels and consider hospitalization if symptoms worsen."
+      ]
+    }
+  ]
+
   If no abnormalities are found, return -1.
 `;
 

@@ -9,7 +9,6 @@ import { RootState } from '@/lib/store';
 const UserInput: React.FC = () => {
   const [scan, setScan] = useState<File | null>(null);
   const [manualInput, setManualInput] = useState<string>("");
-
   const dispatch = useDispatch();
   const router = useRouter();
   const existingScanResults = useSelector((state: RootState) => state.scanResults.items);
@@ -26,7 +25,7 @@ const UserInput: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let scanResults: { condition: string; description: string }[] = [];
+    let scanResults: { condition: string; description: string; confidence: number; recommendations: string[] }[] = [];
 
     if (scan) {
       const formData = new FormData();
@@ -42,7 +41,6 @@ const UserInput: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
-        console.log(result);
         scanResults = JSON.parse(result.result);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -51,11 +49,12 @@ const UserInput: React.FC = () => {
 
     if (manualInput) {
       const manualItems = manualInput.split(",").map(item => ({
-        name: item.trim().toLowerCase(),
-        expiry: 7, // Default expiry for manual input
+        condition: item.trim().toLowerCase(),
+        description: "Manual input",
+        confidence: 0,
+        recommendations: [],
       }));
       scanResults = [...scanResults, ...manualItems];
-      dispatch(setScanResults(manualItems)); // Dispatch manual items to Redux store
     }
 
     // Append new results to existing results and filter out duplicates
@@ -96,6 +95,26 @@ const UserInput: React.FC = () => {
           Analyze
         </button>
       </form>
+
+      {/* Display Scan Results */}
+      {existingScanResults.length > 0 && (
+        <div className="mt-8 w-full max-w-4xl">
+          <h2 className="text-xl font-bold mb-4">Scan Results</h2>
+          {existingScanResults.map((result, index) => (
+            <div key={index} className="bg-white shadow-md rounded-lg p-4 mb-4">
+              <h3 className="text-lg font-bold">{result.condition}</h3>
+              <p className="text-gray-600"><strong>Description:</strong> {result.description}</p>
+              <p className="text-gray-600"><strong>Confidence:</strong> {result.confidence}%</p>
+              <p className="text-gray-600"><strong>Recommendations:</strong></p>
+              <ul className="list-disc list-inside">
+                {result.recommendations.map((rec, idx) => (
+                  <li key={idx}>{rec}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

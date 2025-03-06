@@ -9,6 +9,7 @@ import { RootState } from '@/lib/store';
 const UserInput: React.FC = () => {
   const [scan, setScan] = useState<File | null>(null);
   const [manualInput, setManualInput] = useState<string>("");
+  const [patientId, setPatientId] = useState<string>("");
   const dispatch = useDispatch();
   const router = useRouter();
   const existingScanResults = useSelector((state: RootState) => state.scanResults.items);
@@ -23,6 +24,10 @@ const UserInput: React.FC = () => {
     setManualInput(e.target.value);
   };
 
+  const handlePatientIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPatientId(e.target.value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     let scanResults: { condition: string; description: string; confidence: number; recommendations: string[] }[] = [];
@@ -30,6 +35,7 @@ const UserInput: React.FC = () => {
     if (scan) {
       const formData = new FormData();
       formData.append("file", scan);
+      formData.append("patientId", patientId);
 
       try {
         const response = await fetch("/api/analyze", {
@@ -41,6 +47,7 @@ const UserInput: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const result = await response.json();
+        console.log("UserInput API Response:", result);
         scanResults = JSON.parse(result.result);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -80,6 +87,15 @@ const UserInput: React.FC = () => {
           />
         </label>
         <label>
+          Patient ID:
+          <input
+            type="text"
+            value={patientId}
+            onChange={handlePatientIdChange}
+            className="border p-2 rounded"
+          />
+        </label>
+        <label>
           Upload your X-ray or CT scan:
           <input
             type="file"
@@ -95,7 +111,6 @@ const UserInput: React.FC = () => {
           Analyze
         </button>
       </form>
-
       {/* Display Scan Results */}
       {existingScanResults.length > 0 && (
         <div className="mt-8 w-full max-w-4xl">

@@ -3,6 +3,7 @@ import fs from 'fs';
 import { promisify } from 'util';
 import { redis } from "@/lib/redis";
 import { VertexAI, HarmCategory, HarmBlockThreshold } from '@google-cloud/vertexai';
+import fetch from 'node-fetch';
 
 const PROJECT_ID = "nofoodwaste-448015";
 const location = 'us-central1';
@@ -84,6 +85,35 @@ async function isRateLimited(ip: string): Promise<boolean> {
   return requests > MAX_REQUESTS;
 }
 
+// Function to fetch patient data from MeldRx
+async function fetchPatientData(patientId: string) {
+  const response = await fetch(`https://api.meldrx.com/patients/${patientId}`, {
+    headers: {
+      'Authorization': `Bearer ${process.env.MELDRX_API_KEY}`
+    }
+  });
+
+  console.log("Getting Response from MeldRx:", response);
+
+  if (!response.ok) {
+    throw new Error(`Error fetching patient data: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Function to send data to Gemini
+async function sendDataToGemini(data: any) {
+  const request = {
+    contents: [{ role: 'user', parts: [{ text: prompt }, { inline_data: { data: JSON.stringify(data), mimeType: 'application/json' } }] }],
+  };
+
+  const streamingResult = await generativeVisionModel.generateContentStream(request);
+  const contentResponse = await streamingResult.response;
+
+  return contentResponse;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get("x-forwarded-for") || "unknown-ip";
@@ -94,24 +124,19 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
+    const patientId = formData.get('patientId') as string;
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    if (!file || !patientId) {
+      return NextResponse.json({ error: 'No file or patient ID provided' }, { status: 400 });
     }
 
     const imageData = await file.arrayBuffer();
     const base64Image = Buffer.from(imageData).toString('base64');
 
-    const filePart = { 
-      inline_data: { data: base64Image, mimeType: 'image/jpeg' } };
-    const textPart = { text: prompt };
-    const request = {
-      contents: [{ role: 'user', parts: [textPart, filePart] }],
-    };
+    const patientData = await fetchPatientData(patientId);
+    const geminiResponse = await sendDataToGemini({ image: base64Image, patientData });
 
-    const streamingResult = await generativeVisionModel.generateContentStream(request);
-    const contentResponse = await streamingResult.response;
-    const result = contentResponse.candidates[0].content.parts[0].text;
+    const result = geminiResponse.candidates[0].content.parts[0].text;
 
     return NextResponse.json({ result });
   } catch (error) {

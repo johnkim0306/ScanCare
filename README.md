@@ -1,5 +1,7 @@
 # NoFoodWaste
 
+A demo video: https://www.youtube.com/watch?v=I0Fj_Jk4P08
+
 ## Inspiration
 Nutrition is the foundation for good mental, physical, and emotional health. What if we could intelligently leverage this fact to place individuals who have limited access to quality food sources in the best position to enable their success? I was motivated by this idea and was led to develop a web app which allowed for users to plan meals based on food inflation predictions and reduce food waste.
 
